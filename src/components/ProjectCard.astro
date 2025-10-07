@@ -1,0 +1,51 @@
+---
+// รับ props เพิ่มเข้ามา:
+// - fullImageUrl: URL ของรูปภาพขนาดเต็มที่จะแสดงใน Lightbox
+// - description: ข้อความที่จะแสดงใต้ภาพใน Lightbox
+const { title, imageUrl, fullImageUrl, description } = Astro.props;
+---
+
+<a
+  href={fullImageUrl}
+  class="card glightbox"
+  data-gallery="portfolio"
+  data-description={description}
+>
+  <img src={imageUrl} alt={title} />
+  <div class="card-content">
+    <h3>{title}</h3>
+  </div>
+</a>
+
+<style>
+  /* เราจะปรับสไตล์เล็กน้อยเพื่อให้ <a> แสดงผลเหมือน div */
+  .card {
+    display: block; /* ทำให้ <a> มีคุณสมบัติเหมือน div */
+    text-decoration: none; /* เอาเส้นใต้ลิงก์ออก */
+    color: inherit; /* ให้สีตัวอักษรสืบทอดมาจาก global.css */
+    background-color: var(--color-surface);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+    transition:
+      transform 0.2s,
+      box-shadow 0.2s;
+  }
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
+  .card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block; /* แก้ปัญหาช่องว่างเล็กๆ ใต้ภาพ */
+  }
+  .card-content {
+    padding: var(--spacing-sm);
+  }
+  .card-content h3 {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+</style>

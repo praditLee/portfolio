@@ -1,0 +1,52 @@
+---
+// ส่วนนี้สำหรับเขียน JavaScript/TypeScript ในอนาคต
+import "../styles/global.css";
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css"
+    />
+    <title>{title}</title>
+  </head>
+  <body>
+    <header>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/graphic-design">Graphic Design</a>
+        <a href="/video-editor">Video Editor</a>
+        <a href="/web-developer">Web Developer</a>
+        <a href="/live-scribing">Live Scribing</a>
+      </nav>
+    </header>
+    <main>
+      <slot />
+    </main>
+    <footer>&copy; 2025 Pradit Leelanimit All rights reserved.</footer>
+    <script
+      id="glightbox-lib"
+      src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"
+    ></script>
+
+    <script is:inline>
+      // หา element ของสคริปต์ไลบรารีที่เราตั้ง id ไว้
+      const gLightboxLib = document.getElementById("glightbox-lib");
+
+      // เพิ่ม Event Listener เพื่อรอฟังว่ามันโหลดเสร็จหรือยัง
+      gLightboxLib.addEventListener("load", function () {
+        // เมื่อไลบรารีโหลดเสร็จแล้ว คำสั่งข้างในนี้ถึงจะทำงาน
+        console.log("GLightbox library has loaded successfully!");
+        const lightbox = GLightbox({
+          selector: ".glightbox",
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,30 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+---
+
+<MainLayout title="Portfolio - Graphic Design">
+  <h1>ผลงานด้าน Graphic Design</h1>
+
+  <div class="project-grid">
+    <ProjectCard
+      title="โปสเตอร์งานอีเวนต์"
+      imageUrl="/images/graphic-poster-thumb.png"
+      fullImageUrl="/images/graphic-poster-full.png"
+      description="ออกแบบโปสเตอร์สำหรับงานอีเวนต์ประจำปี โดยใช้สีสันสดใสเพื่อดึงดูดความสนใจ"
+    />
+    <ProjectCard
+      title="ออกแบบโลโก้บริษัท"
+      imageUrl="/images/logo-design-thumb.jpg"
+      fullImageUrl="/images/logo-design-full.jpg"
+      description="ออกแบบโลโก้สำหรับบริษัทสตาร์ทอัพด้านเทคโนโลยี เน้นความเรียบง่ายและทันสมัย"
+    />
+  </div>
+</MainLayout>
+<style>
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-md);
+  }
+</style>
