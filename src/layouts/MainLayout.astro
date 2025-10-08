@@ -1,7 +1,8 @@
 ---
-// ส่วนนี้สำหรับเขียน JavaScript/TypeScript ในอนาคต
+// 1. Import CSS ของ GLightbox เข้ามาตรงนี้
+//    วิธีนี้จะทำให้ Astro นำ CSS ไปรวมกับไฟล์ของโปรเจกต์เราโดยตรง
+import "glightbox/dist/css/glightbox.css";
 import "../styles/global.css";
-
 const { title } = Astro.props;
 ---
 
@@ -10,42 +11,64 @@ const { title } = Astro.props;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css"
-    />
+
     <title>{title}</title>
   </head>
   <body>
-    <header>
+    <header class="navbar">
+      <div class="logo">
+        <a href="/"
+          ><img src="logo-mann.png" alt="Logo" width="50px" /> PraditLee</a
+        >
+      </div>
       <nav>
-        <a href="/">Home</a>
-        <a href="/graphic-design">Graphic Design</a>
-        <a href="/video-editor">Video Editor</a>
-        <a href="/web-developer">Web Developer</a>
-        <a href="/live-scribing">Live Scribing</a>
+        <ul class="nav-links" id="nav-links">
+          <li><a href="/graphic-design">Graphic Design</a></li>
+          <li><a href="/video-editor">Video Editor</a></li>
+          <li><a href="/web-developer">Web Developer</a></li>
+          <li><a href="/live-scribing">Live Scribing</a></li>
+        </ul>
       </nav>
+      <button
+        class="hamburger-menu"
+        id="hamburger-btn"
+        aria-label="Toggle Menu"
+      >
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
     </header>
+
     <main>
-      <slot />
+      <div class="container">
+        <slot />
+      </div>
     </main>
-    <footer>&copy; 2025 Pradit Leelanimit All rights reserved.</footer>
-    <script
-      id="glightbox-lib"
-      src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"
-    ></script>
+    <footer>&copy; 2025 Pradit Leelanimit All Rights Reserved</footer>
 
-    <script is:inline>
-      // หา element ของสคริปต์ไลบรารีที่เราตั้ง id ไว้
-      const gLightboxLib = document.getElementById("glightbox-lib");
+    <script>
+      import GLightbox from "glightbox";
 
-      // เพิ่ม Event Listener เพื่อรอฟังว่ามันโหลดเสร็จหรือยัง
-      gLightboxLib.addEventListener("load", function () {
-        // เมื่อไลบรารีโหลดเสร็จแล้ว คำสั่งข้างในนี้ถึงจะทำงาน
-        console.log("GLightbox library has loaded successfully!");
-        const lightbox = GLightbox({
-          selector: ".glightbox",
-        });
+      const lightbox = GLightbox({
+        selector: ".glightbox",
+        touchNavigation: true,
+        loop: true,
+        openEffect: "zoom",
+        closeEffect: "fade",
+        descriptionPosition: "bottom",
+      });
+    </script>
+    <script>
+      const hamburgerBtn = document.getElementById("hamburger-btn");
+      const navLinks = document.getElementById("nav-links");
+
+      hamburgerBtn.addEventListener("click", () => {
+        // เพิ่ม/ลบคลาสให้กับ navLinks (เหมือนเดิม)
+        navLinks.classList.toggle("is-active");
+
+        // เพิ่ม/ลบคลาสให้กับตัวปุ่มเองด้วย! (บรรทัดใหม่)
+        hamburgerBtn.classList.toggle("is-active");
       });
     </script>
   </body>

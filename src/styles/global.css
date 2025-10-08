@@ -1,102 +1,257 @@
-/* --- การนำเข้าฟอนต์จาก Google Fonts --- */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Sarabun:wght@400;500&display=swap');
-
-/* --- :root คือที่ที่เราจะเก็บ "ตัวแปร" ที่ใช้ทั้งเว็บ (เหมือนเป็น Control Panel) --- */
+/* --- การนำเข้าฟอนต์จาก Google Fonts (เวอร์ชันอัปเดต) --- */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@700&family=Poppins:wght@400;600;700&family=Sarabun:wght@400;500&display=swap');
+/* --- :root (Control Panel) --- */
 :root {
-    /* ตัวแปรสี (Color Palette) - ลองเปลี่ยนค่าสีตรงนี้เพื่อเปลี่ยนธีมเว็บ! */
-    --color-primary: #007BFF; /* สีหลัก/สีไฮไลท์ (ฟ้า) */
+    --color-primary: #007BFF;
     --color-primary-dark: #0056b3;
-    --color-background: #F8F9FA; /* สีพื้นหลัง (เทาอ่อน) */
-    --color-surface: #FFFFFF; /* สีพื้นผิวของการ์ด (ขาว) */
-    --color-text-primary: #212529; /* สีตัวอักษรหลัก (ดำเกือบสนิท) */
-    --color-text-secondary: #6C757D; /* สีตัวอักษรรอง (เทา) */
-    --color-border: #DEE2E6; /* สีเส้นขอบ */
+    --color-background: #FFFFFF; /* เปลี่ยนเป็นสีขาวล้วน */
+    --color-surface: #F8F9FA;   /* สีพื้นผิวสลับ (เทาอ่อน) */
+    --color-text-primary: #212529;
+    --color-text-secondary: #6C757D;
+    --color-border: #DEE2E6;
 
-    /* ตัวแปรฟอนต์ (Typography) */
-    --font-heading: 'Poppins', sans-serif; /* ฟอนต์สำหรับหัวข้อ */
-    --font-body: 'Sarabun', sans-serif;    /* ฟอนต์สำหรับเนื้อหา */
+    --font-heading: 'Poppins', 'Noto Sans Thai', sans-serif;
+    --font-body: 'Sarabun', sans-serif;
 
-    /* ตัวแปรสำหรับขนาดและระยะห่าง (Spacing) */
-    --spacing-xs: 0.5rem;  /* 8px */
-    --spacing-sm: 1rem;    /* 16px */
-    --spacing-md: 1.5rem;  /* 24px */
-    --spacing-lg: 2rem;    /* 32px */
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 4rem;
 
-    /* อื่นๆ */
     --border-radius: 8px;
     --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* --- การตั้งค่าพื้นฐานและ Reset ค่าเริ่มต้นของ Browser --- */
-*,
-*::before,
-*::after {
+/* --- การตั้งค่าพื้นฐานและ Reset --- */
+*, *::before, *::after {
     box-sizing: border-box;
 }
 
 html {
-    /* ทำให้การเลื่อนหน้าจอเมื่อคลิกลิงก์ (Anchor link) นุ่มนวล */
-    scroll-behavior: smooth; 
+    scroll-behavior: smooth;
+    /* เพิ่ม scroll-padding-top เพื่อไม่ให้หัวข้อถูกซ่อนใต้เมนูที่ fixed */
+    scroll-padding-top: 80px;
 }
 
 body {
     margin: 0;
-    padding: 0 30px;
+    padding: 0;
     font-family: var(--font-body);
     font-size: 16px;
-    line-height: 1.7; /* เพิ่มระยะห่างระหว่างบรรทัดให้อ่านง่าย */
+    line-height: 1.7;
     color: var(--color-text-primary);
     background-color: var(--color-background);
+    /* --- โค้ดที่เพิ่มเข้ามาสำหรับ Sticky Footer --- */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* << บังคับให้ body สูงเต็มหน้าจอเป็นอย่างน้อย */
 }
 
-/* --- การตั้งค่า Typography --- */
+/* --- การตั้งค่า Typography (เหมือนเดิม) --- */
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
     font-weight: 700;
     line-height: 1.3;
-    margin-top: var(--spacing-md);
-    margin-bottom: var(--spacing-sm);
 }
-
-h1 { font-size: 2.75rem; }
+h1 { font-size: 3rem; }
 h2 { font-size: 2.25rem; }
 h3 { font-size: 1.5rem; }
-
-p {
-    margin-bottom: var(--spacing-sm);
-    max-width: 65ch; /* จำกัดความยาวบรรทัดไม่ให้ยาวเกินไป อ่านง่ายขึ้น */
-}
-
+p { max-width: 65ch; }
 a {
     color: var(--color-primary);
     text-decoration: none;
     transition: color 0.2s ease-in-out;
 }
-
 a:hover {
     color: var(--color-primary-dark);
-    text-decoration: underline;
 }
 
 /* --- การตั้งค่า Layout ส่วนกลาง --- */
 main {
     padding: var(--spacing-lg) 0;
+    /* --- โค้ดที่เพิ่มเข้ามาสำหรับ Sticky Footer --- */
+    flex-grow: 1; /* << สั่งให้ main ยืดขยายตัวเองให้เต็มพื้นที่ว่างที่เหลือ */
 }
 
+/* --- Header & Navigation Bar (เมนูบนสุด) --- */
+.navbar {
+    position: sticky; /* ทำให้เมนูลอยตาม */
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-lg);
+    background-color: rgba(255, 255, 255, 0.85); /* พื้นหลังโปร่งแสง */
+    backdrop-filter: blur(10px); /* เอฟเฟกต์กระจกฝ้า */
+    border-bottom: 1px solid var(--color-border);
+}
+
+.logo a {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--color-text-primary);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-links {
+    display: flex;
+    gap: var(--spacing-lg);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links a {
+    font-family: var(--font-heading);
+    color: var(--color-text-secondary);
+    font-weight: 600;
+    position: relative;
+    padding: var(--spacing-sm);
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    transform: scaleX(0);
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: var(--color-primary);
+    transform-origin: bottom right;
+    transition: transform 0.25s ease-out;
+}
+
+.nav-links a:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+}
+
+/* --- สไตล์สำหรับไอคอนแฮมเบอร์เกอร์ (เวอร์ชันอัปเกรด) --- */
+.hamburger-menu {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 2.5rem; /* ขยายขนาดเล็กน้อย */
+    height: 2.5rem; /* ขยายขนาดเล็กน้อย */
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem; /* เพิ่ม padding ด้านใน */
+    z-index: 10;
+    /* เพิ่ม transition สำหรับการเปลี่ยนเป็นวงกลม */
+    transition: background-color 0.3s ease-in-out, border-radius 0.3s ease-in-out;
+}
+
+.hamburger-menu:focus {
+    outline: none;
+}
+
+.hamburger-menu .bar {
+    display: block;
+    width: 1.5rem; /* ปรับความยาวของขีด */
+    height: 3px;
+    margin: 0 auto; /* จัดให้อยู่กึ่งกลาง */
+    background-color: var(--color-text-primary);
+    border-radius: 2px;
+    /* transition ที่ซับซ้อนขึ้นสำหรับ Animation X */
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+/* --- Animation ตอนที่เมนูถูกเปิด (มีคลาส .is-active) --- */
+
+/* ทำให้ปุ่มกลายเป็นวงกลม */
+.hamburger-menu.is-active {
+    background-color: var(--color-surface);
+    border-radius: 50%;
+}
+
+/* ขีดบน: หมุน +45 องศา และเลื่อนลงมาตรงกลาง */
+.hamburger-menu.is-active .bar:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+
+/* ขีดกลาง: จางหายไป */
+.hamburger-menu.is-active .bar:nth-child(2) {
+    opacity: 0;
+}
+
+/* ขีดล่าง: หมุน -45 องศา และเลื่อนขึ้นไปตรงกลาง */
+.hamburger-menu.is-active .bar:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
+
+
+/* --- การออกแบบ Section --- */
+section {
+    padding: var(--spacing-xl) 0;
+}
+/* ทำให้ Section สลับสีกันเพื่อความสวยงาม */
+section:nth-of-type(even) {
+    background-color: var(--color-surface);
+}
+
+.container {
+    width: 90%;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+
+/* --- Footer --- */
 footer {
     text-align: center;
-    padding: var(--spacing-md);
-    margin-top: var(--spacing-lg);
-    background-color: var(--color-surface);
-    border-top: 1px solid var(--color-border);
-    color: var(--color-text-secondary);
+    padding: var(--spacing-lg);
+    margin-top: var(--spacing-xl);
+    background-color: var(--color-text-primary);
+    color: var(--color-surface);
 }
 
 
-/* --- Responsive Design สำหรับหน้าจอขนาดเล็ก (มือถือ) --- */
+/* --- Responsive Design สำหรับจอเล็ก --- */
 @media (max-width: 768px) {
-    body {
-        font-size: 15px;
+    .nav-links {
+        /* ปรับสไตล์ตอนเป็นเมนูมือถือ */
+        display: none; /* ซ่อนไว้ตามปกติ */
+        position: absolute;
+        top: 65px; /* ความสูงของ navbar */
+        left: 0;
+        width: 100%;
+        background-color: var(--color-background);
+        flex-direction: column;
+        align-items: center;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    /* คลาสที่จะถูกเพิ่มโดย JavaScript */
+    .nav-links.is-active {
+        display: flex; /* แสดงเมนูเมื่อมีคลาส is-active */
+    }
+
+    .nav-links li {
+        width: 100%;
+        text-align: center;
+    }
+
+    .nav-links a {
+        display: block;
+        width: 100%;
+        padding: var(--spacing-md) 0;
+    }
+
+    .hamburger-menu {
+        display: flex; /* แสดงปุ่มแฮมเบอร์เกอร์ */
+    }
+    
+    html {
+        scroll-padding-top: 70px; /* ปรับระยะห่างสำหรับเมนูที่เล็กลง */
     }
 
     h1 { font-size: 2.25rem; }

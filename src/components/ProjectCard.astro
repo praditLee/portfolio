@@ -1,35 +1,178 @@
 ---
-// รับ props เพิ่มเข้ามา:
-// - fullImageUrl: URL ของรูปภาพขนาดเต็มที่จะแสดงใน Lightbox
-// - description: ข้อความที่จะแสดงใต้ภาพใน Lightbox
-const { title, imageUrl, fullImageUrl, description } = Astro.props;
+const {
+  title,
+  imageUrl,
+  description,
+  tags = [],
+  type = "image",
+  videoUrl = "",
+  gallery = [],
+  category = "",
+} = Astro.props;
+
+// --- Logic ใหม่สำหรับจัดการ Gallery ---
+
+// 1. กำหนดให้ทุกโปรเจกต์ใช้ gallery name เดียวกันคือ "portfolio"
+const galleryName = "portfolio";
+
+// 2. กำหนดว่าลิงก์หลักที่จะแสดงผลคืออะไร
+let mainLightboxUrl = "";
+if (type === "video") {
+  mainLightboxUrl = videoUrl;
+} else if (gallery.length > 0) {
+  mainLightboxUrl = gallery[0];
+} else {
+  mainLightboxUrl = imageUrl; // Fallback
+}
+
+// 3. เตรียมรูปภาพที่เหลือสำหรับทำเป็นลิงก์ที่ซ่อนไว้
+const additionalImages = type === "image" ? gallery.slice(1) : [];
 ---
 
-<a
-  href={fullImageUrl}
-  class="card glightbox"
-  data-gallery="portfolio"
-  data-description={description}
->
-  <img src={imageUrl} alt={title} />
+<div class="card">
+  {category && <div class="card-category">{category}</div>}
+
+  <a
+    href={mainLightboxUrl}
+    class="glightbox card-image-link"
+    data-gallery={galleryName}
+    data-description={description}
+  >
+    <img src={imageUrl} alt={title} />
+
+    {
+      type === "video" && (
+        <div class="play-icon-overlay">
+          <svg class="play-icon" viewBox="0 0 200 200" alt="Play video">
+            <circle
+              cx="100"
+              cy="100"
+              r="90"
+              fill="rgba(0,0,0,0.5)"
+              stroke-width="15"
+              stroke="#fff"
+            />
+            <polygon points="70, 55 70, 145 145, 100" fill="#fff" />
+          </svg>
+        </div>
+      )
+    }
+  </a>
+
+  {
+    additionalImages.length > 0 && (
+      <div style="display: none;">
+        {additionalImages.map((image) => (
+          <a
+            href={image}
+            class="glightbox"
+            data-gallery={galleryName}
+            data-description={description}
+          />
+        ))}
+      </div>
+    )
+  }
+
   <div class="card-content">
     <h3>{title}</h3>
+    <p set:html={description} />
+
+    {
+      tags.length > 0 && (
+        <div class="tags-container">
+          {tags.map((tag) => (
+            <span class="tag">{tag}</span>
+          ))}
+        </div>
+      )
+    }
   </div>
-</a>
+</div>
 
 <style>
-  /* เราจะปรับสไตล์เล็กน้อยเพื่อให้ <a> แสดงผลเหมือน div */
   .card {
-    display: block; /* ทำให้ <a> มีคุณสมบัติเหมือน div */
-    text-decoration: none; /* เอาเส้นใต้ลิงก์ออก */
-    color: inherit; /* ให้สีตัวอักษรสืบทอดมาจาก global.css */
+    display: flex;
+    position: relative;
+    flex-direction: column;
     background-color: var(--color-surface);
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
     overflow: hidden;
+    height: 100%;
     transition:
       transform 0.2s,
-      box-shadow 0.2s;
+      box-shadow 0.2s; /* ย้าย transition มาไว้ที่ div */
+  }
+  .card-category {
+    position: absolute;
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+    z-index: 5;
+
+    /* สไตล์เริ่มต้น: โปร่งแสง */
+    background-color: rgba(33, 37, 41, 0.2); /* สีเทาเข้มโปร่งแสง */
+    backdrop-filter: blur(4px); /* เบลอพื้นหลังเล็กน้อย */
+    color: white;
+
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+
+    /* เพิ่ม Transition */
+    transition: all 0.3s ease;
+  }
+
+  /* สไตล์เมื่อ Hover ที่การ์ด */
+  .card:hover .card-category {
+    background-color: rgba(33, 37, 41, 0.4);
+    /* transform: translateY(-2px); */
+  }
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12); /* ย้าย hover effect มาไว้ที่ div */
+  }
+
+  .card-image-link {
+    display: block; /* ทำให้ <a> เป็น block element */
+    position: relative; /* สำหรับ play icon */
+  }
+
+  .card img {
+    width: 100%;
+    display: block;
+  }
+  /* 4. เพิ่มสไตล์สำหรับ Play Icon และ Overlay */
+  .play-icon-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .card:hover .play-icon-overlay {
+    opacity: 1;
+  }
+
+  .play-icon {
+    width: 30%; /* << เปลี่ยนเป็น % */
+    height: auto; /* << ปล่อยให้สูงอัตโนมัติตามสัดส่วน */
+    max-width: 60px; /* << แต่ขนาดสูงสุดไม่เกิน 60px */
+    transition: transform 0.3s ease;
+  }
+
+  .card:hover .play-icon {
+    transform: scale(1.1);
   }
   .card:hover {
     transform: translateY(-5px);
@@ -37,15 +180,39 @@ const { title, imageUrl, fullImageUrl, description } = Astro.props;
   }
   .card img {
     width: 100%;
-    height: 220px;
+    /* height: 220px; */
     object-fit: cover;
     display: block; /* แก้ปัญหาช่องว่างเล็กๆ ใต้ภาพ */
   }
   .card-content {
     padding: var(--spacing-sm);
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* ให้ card-content ขยายเต็มพื้นที่ที่เหลือ */
   }
   .card-content h3 {
-    margin: 0;
-    font-size: 1.25rem;
+    margin-top: 0;
+    margin-bottom: var(--spacing-xs);
+  }
+  .card-content p {
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: var(--spacing-sm);
+  }
+  /* เพิ่มสไตล์สำหรับ Tags */
+  .tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: auto; /* คำสั่งนี้จะดันตัวเองไปอยู่ล่างสุดของ flex container */
+  }
+  .tag {
+    background-color: var(--color-surface);
+    color: var(--color-text-secondary);
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px; /* ทำให้เป็นทรงแคปซูล */
+    border: 1px solid var(--color-border);
   }
 </style>
