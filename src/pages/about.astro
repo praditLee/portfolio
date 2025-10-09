@@ -1,0 +1,25 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+---
+
+<MainLayout
+  title="About me - Pradit Leelanimit"
+  description="เกี่ยวกับประดิษฐ์ - เรื่องราว, ทักษะ, และประสบการณ์"
+>
+  <div class="about-content">
+    <h1>About Me</h1>
+    <p>สวัสดีครับ ผมประดิษฐ์... (ใส่เนื้อหาแนะนำตัวของคุณที่นี่)</p>
+    <p>
+      คุณสามารถเล่าเรื่องราวการเดินทางของคุณ, ปรัชญาในการทำงาน, หรือทักษะต่างๆ
+      ที่คุณเชี่ยวชาญได้ในหน้านี้...
+    </p>
+  </div>
+</MainLayout>
+
+<style>
+  .about-content {
+    max-width: 70ch; /* จำกัดความกว้างให้อ่านง่าย */
+    margin: 0 auto;
+  }
+</style>

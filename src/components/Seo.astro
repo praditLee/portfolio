@@ -1,0 +1,25 @@
+---
+const {
+  title = "Pradit Lee's Portfolio", // <-- title เริ่มต้น
+  description = "ผลงานด้าน Graphic Design, Video Editor, Web Developer, และ Live Scribing ของประดิษฐ์", // <-- description เริ่มต้น
+  ogImage = "/images/social-preview.jpg", // <-- รูปภาพสำหรับแชร์ลงโซเชียล
+} = Astro.props;
+
+const siteTitle = `${title} | Pradit Lee`;
+---
+
+<title>{siteTitle}</title>
+<meta name="description" content={description} />
+
+<meta property="og:url" content={Astro.url} />
+<meta property="og:type" content="website" />
+<meta property="og:title" content={siteTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={new URL(ogImage, Astro.url)} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:domain" content={Astro.site} />
+<meta property="twitter:url" content={Astro.url} />
+<meta name="twitter:title" content={siteTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={new URL(ogImage, Astro.url)} />

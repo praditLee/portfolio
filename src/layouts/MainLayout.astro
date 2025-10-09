@@ -1,9 +1,12 @@
 ---
-// 1. Import CSS ของ GLightbox เข้ามาตรงนี้
-//    วิธีนี้จะทำให้ Astro นำ CSS ไปรวมกับไฟล์ของโปรเจกต์เราโดยตรง
+import Seo from "../components/Seo.astro";
 import "glightbox/dist/css/glightbox.css";
 import "../styles/global.css";
-const { title } = Astro.props;
+// เพิ่มค่า Default ให้กับ title และ description
+const {
+  title = "Untitled Page",
+  description = "ผลงานส่วนหนึ่งใน Portfolio ของประดิษฐ์",
+} = Astro.props;
 ---
 
 <!doctype html>
@@ -11,8 +14,11 @@ const { title } = Astro.props;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-
-    <title>{title}</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <Seo title={title} description={description} />
   </head>
   <body>
     <header class="navbar">
@@ -21,12 +27,11 @@ const { title } = Astro.props;
           ><img src="logo-mann.png" alt="Logo" width="50px" /> PraditLee</a
         >
       </div>
-      <!-- <nav>
+      <nav>
         <ul class="nav-links" id="nav-links">
-          <li><a href="/graphic-design">Graphic Design</a></li>
-          <li><a href="/video-editor">Video Editor</a></li>
-          <li><a href="/web-developer">Web Developer</a></li>
-          <li><a href="/live-scribing">Live Scribing</a></li>
+          <li><a href="/about">About Me</a></li>
+          <li><a href="#contact">Contact</a></li>
+          <!-- <li><a href="/live-scribing">Live Scribing</a></li> -->
         </ul>
       </nav>
       <button
@@ -37,7 +42,7 @@ const { title } = Astro.props;
         <span class="bar"></span>
         <span class="bar"></span>
         <span class="bar"></span>
-      </button> -->
+      </button>
     </header>
 
     <main>

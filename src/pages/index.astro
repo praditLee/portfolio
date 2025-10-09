@@ -42,9 +42,12 @@ const allTags = [...new Set(allProjects.flatMap((project) => project.tags))];
 const shuffledProjects = shuffle([...allProjects]);
 ---
 
-<MainLayout title="My Portfolio - Home">
+<MainLayout
+  title="Mann Portfolio - Home"
+  description="ยินดีต้อนรับสู่ Portfolio รวบรวมผลงานเด่นด้านการออกแบบและพัฒนาเว็บไซต์"
+>
   <section id="homepage-portfolio">
-    <h1>My Works</h1>
+    <h1>Mann's Works</h1>
     <p>รวบรวมผลงานเด่นจากทุกหมวดหมู่</p>
 
     <div class="category-filters">
@@ -84,6 +87,42 @@ const shuffledProjects = shuffle([...allProjects]);
         ))
       }
     </div>
+  </section>
+  {/* =============================================== */}
+  {/* ===== เพิ่ม SECTION ใหม่สำหรับฟอร์มติดต่อ ===== */}
+  {/* =============================================== */}
+  <section id="contact">
+    <h2>Contact Me</h2>
+    <p>สนใจร่วมงาน หรือมีคำถาม? กรอกฟอร์มด้านล่างนี้ได้เลยครับ</p>
+
+    <form
+      name="contact"
+      method="POST"
+      data-netlify="true"
+      netlify-honeypot="bot-field"
+      class="contact-form"
+    >
+      {/* Field ที่ซ่อนไว้สำหรับดักจับบอท (Honeypot) */}
+      <p class="hidden" style="display:none;">
+        <label>
+          Don’t fill this out if you’re human: <input name="bot-field" />
+        </label>
+      </p>
+
+      <div class="form-group">
+        <label for="name">ชื่อของคุณ</label>
+        <input type="text" id="name" name="name" required />
+      </div>
+      <div class="form-group">
+        <label for="email">อีเมล</label>
+        <input type="email" id="email" name="email" required />
+      </div>
+      <div class="form-group">
+        <label for="message">ข้อความ</label>
+        <textarea id="message" name="message" rows="5" required></textarea>
+      </div>
+      <button type="submit" class="submit-btn">ส่งข้อความ</button>
+    </form>
   </section>
 </MainLayout>
 
@@ -177,6 +216,56 @@ const shuffledProjects = shuffle([...allProjects]);
     .masonry-grid {
       column-count: 1;
     }
+  }
+  /* ====== CSS สำหรับฟอร์มติดต่อ ====== */
+  #contact {
+    padding-top: var(--spacing-xl);
+    padding-bottom: var(--spacing-xl);
+    background-color: var(--color-surface);
+  }
+  #contact h2,
+  #contact p {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .contact-form {
+    max-width: 600px;
+    margin: var(--spacing-lg) auto 0;
+  }
+  .form-group {
+    margin-bottom: var(--spacing-md);
+  }
+  .form-group label {
+    display: block;
+    margin-bottom: var(--spacing-xs);
+    font-weight: 600;
+  }
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    font-family: var(--font-body);
+    font-size: 1rem;
+  }
+  .submit-btn {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--color-primary);
+    color: white;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  .submit-btn:hover {
+    background-color: var(--color-primary-dark);
   }
 </style>
 
