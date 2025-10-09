@@ -21,7 +21,7 @@ const { title } = Astro.props;
           ><img src="logo-mann.png" alt="Logo" width="50px" /> PraditLee</a
         >
       </div>
-      <nav>
+      <!-- <nav>
         <ul class="nav-links" id="nav-links">
           <li><a href="/graphic-design">Graphic Design</a></li>
           <li><a href="/video-editor">Video Editor</a></li>
@@ -37,7 +37,7 @@ const { title } = Astro.props;
         <span class="bar"></span>
         <span class="bar"></span>
         <span class="bar"></span>
-      </button>
+      </button> -->
     </header>
 
     <main>
@@ -47,18 +47,6 @@ const { title } = Astro.props;
     </main>
     <footer>&copy; 2025 Pradit Leelanimit All Rights Reserved</footer>
 
-    <script>
-      import GLightbox from "glightbox";
-
-      const lightbox = GLightbox({
-        selector: ".glightbox",
-        touchNavigation: true,
-        loop: true,
-        openEffect: "zoom",
-        closeEffect: "fade",
-        descriptionPosition: "bottom",
-      });
-    </script>
     <script>
       const hamburgerBtn = document.getElementById("hamburger-btn");
       const navLinks = document.getElementById("nav-links");

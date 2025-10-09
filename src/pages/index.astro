@@ -1,169 +1,84 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
 import ProjectCard from "../components/ProjectCard.astro";
+import { getCollection } from "astro:content";
 
-// 1. สร้างฟังก์ชันสำหรับสุ่มลำดับ Array (Fisher-Yates Shuffle)
-// วางฟังก์ชันนี้ไว้ด้านบนสุดของ Frontmatter
+// 1. นิยามฟังก์ชัน SHUFFLE
 function shuffle(array) {
   let currentIndex = array.length,
     randomIndex;
-
-  // วนลูปจนกว่าจะไม่มี element เหลือให้สลับ
   while (currentIndex != 0) {
-    // เลือก element ที่ยังเหลืออยู่แบบสุ่ม
     randomIndex = Math.floor(Math.random() * currentIndex);
     currentIndex--;
-
-    // และสลับมันกับ element ปัจจุบัน
     [array[currentIndex], array[randomIndex]] = [
       array[randomIndex],
       array[currentIndex],
     ];
   }
-
   return array;
 }
 
-const allProjects = [
-  {
-    title: "โปสเตอร์งานค่ายอาสา",
-    type: "image",
-    imageUrl: "/images/graphic-poster-full.png",
-    description:
-      "ผลงานออกแบบโปสเตอร์งานค่ายอาสา ช่วงหลังเหตุการณ์น้ำท่วมภาคใต้",
-    category: "Graphic Design",
-    tags: ["Poster"],
-    gallery: ["/images/graphic-poster-full.png"],
-  },
-  {
-    title: "Infographic for Exhibition",
-    type: "image",
-    imageUrl: "/images/info-exhibit-water.webp",
-    description:
-      "งานออกแบบ Infographic สำหรับนิทรรศการของ <a href='https://food4change.in.th/' target='_blank'>Food for Change</a> ซึ่งเป็นองค์กรไม่แสวงหาผลกำไรที่ทำงานรณรงค์เรื่องวิถีการกินเปลี่ยนโลก กินอย่างรู้ที่มา กินอย่างใส่ใจกระบวนการผลิตอาหารที่ยั่งยืน",
-    category: "Graphic Design",
-    tags: ["Infographic", "Poster"],
-    gallery: ["/images/info-exhibit-water.webp"],
-  },
-  {
-    title: "Backdrop for Event",
-    type: "image",
-    imageUrl: "/images/SDGs-bd.webp",
-    description: "งานออกแบบ Backdrop สำหรับงานอีเวนต์",
-    category: "Graphic Design",
-    tags: ["Backdrop", "Event"],
-    gallery: ["/images/SDGs-bd.webp"],
-  },
-  {
-    title: "ออกแบบโปสเตอร์ประชาสัมพันธ์",
-    type: "image",
-    imageUrl: "/images/localHealth-poster.webp",
-    description: "งานออกแบบโปสเตอร์ประชาสัมพันธ์โครงการ",
-    category: "Graphic Design",
-    tags: ["Event", "Poster"],
-    gallery: ["/images/localHealth-poster.webp"],
-  },
-  {
-    title: "Exhibition Thai PAN",
-    type: "image",
-    imageUrl: "/images/Board_Thai-PAN01.webp",
-    description:
-      "งานออกแบบนิทรรศการให้กับองค์กร <a href='https://www.thaipan.org/' target='_blank'>Thai PAN</a> ซึ่งทำงานรณรงค์เรื่องการตรวจสอบสารเคมีกำจัดศัตรูพืชในอาหารและสิ่งแวดล้อม",
-    category: "Graphic Design",
-    tags: ["Exhibition", "Event"],
-    gallery: ["/images/Board_Thai-PAN01.webp"],
-  },
-  {
-    title: "สื่อวิดีโอชุดฟานอกห้อง",
-    type: "video",
-    imageUrl: "https://img.youtube.com/vi/XwGV4fGcJoY/maxresdefault.jpg", // URL ภาพปก
-    videoUrl: "https://www.youtube.com/watch?v=XwGV4fGcJoY",
-    description:
-      "ผลงานด้าน Video Editor ที่ใช้เทคนิค Animation ผสมผสานกับเนื้อหาที่วิทยากรบรรยาย ดูผลงานทั้งหมดได้ที่ <a href='https://roottogether.net/category/course/facilitator-commonly/%e0%b8%9f%e0%b8%b2%e0%b8%99%e0%b8%ad%e0%b8%81%e0%b8%ab%e0%b9%89%e0%b8%ad%e0%b8%87/' target='_blank'>ที่นี่</a>",
-    category: "Video Editor",
-    tags: ["FCPX", "Animation"],
-    gallery: [],
-  },
-  {
-    title: "โปสเตอร์ที่ดินคือชีวิต",
-    type: "image",
-    imageUrl: "/images/LandIsLife-Poster.webp",
-    description:
-      "งานออกแบบโปสเตอร์ที่ดินคือชีวิต เพื่อรณรงค์เรื่องการใช้ที่ดินอย่างยั่งยืน",
-    category: "Graphic Design",
-    tags: ["Event", "Poster"],
-    gallery: ["/images/LandIsLife-Poster.webp"],
-  },
-  {
-    title: "Live Scribing for Event",
-    type: "image",
-    imageUrl: "/images/live-scribing-event.webp",
-    fullImageUrl: "/images/live-scribing-event.webp",
-    description:
-      "ผลงาน Live Scribing ในงานอีเวนต์ต่างๆ เพื่อช่วยสรุปประเด็นสำคัญและเพิ่มความน่าสนใจให้กับการนำเสนอ",
-    category: "Live Scribing",
-    tags: ["Live Scribing", "Event"],
-    gallery: [],
-  },
-  {
-    title: "นิทรรศการป่าชุมชน",
-    type: "image",
-    imageUrl: "/images/Maejamm01.webp",
-    description:
-      "งานออกแบบนิทรรศการป่าชุมชนแม่แจ่ม จังหวัดเชียงใหม่ เป็นงานส่งเสริมการจัดการทรัพยากรธรรมชาติและสิ่งแวดล้อมโดยชุมชนท้องถิ่น",
-    category: "Graphic Design",
-    tags: ["Exhibition", "Event"],
-    gallery: [
-      "/images/Maejamm01.webp",
-      "/images/Maejamm02.webp",
-      "/images/Maejamm03.webp",
-      "/images/Maejamm04.webp",
-    ],
-  },
-  {
-    title: "เว็บไซต์สมาคมผู้เลี้ยงกุ้งไทย",
-    type: "image",
-    imageUrl: "/images/thaishrimpfarmers-thumb.png",
-    description:
-      "ผลงานด้าน Web Developer สร้างเว็บไซต์สมาคมผู้เลี้ยงกุ้งไทย ด้วยระบบ CMS WordPress เพื่อให้ผู้ดูแลสามารถอัปเดตข้อมูลได้เองอย่างง่ายดาย",
-    category: "Web Developer",
-    tags: ["WordPress", "Web Developer", "PHP"],
-    gallery: [],
-  },
-];
-// ดึง Tag ที่ไม่ซ้ำกัน (เหมือนเดิม)
-const allTags = [
-  "All",
-  ...new Set(allProjects.flatMap((project) => project.tags)),
-];
+// 2. ดึงข้อมูลจาก CONTENT COLLECTIONS
+const projectsFromCollection = await getCollection("projects");
 
-// 2. เรียกใช้ฟังก์ชัน shuffle กับ allProjects ของเรา
-// เราสร้าง copy ของ array ขึ้นมาก่อนด้วย [...allProjects] เพื่อไม่ให้กระทบต้นฉบับ
+const allProjects = projectsFromCollection.map((project) => ({
+  title: project.data.title,
+  category: project.data.category,
+  tags: project.data.tags,
+  imageUrl: project.data.imageUrl,
+  gallery: project.data.gallery || [],
+  type: project.data.type,
+  videoUrl: project.data.videoUrl || "",
+  description: project.body,
+  slug: project.slug, // เพิ่ม slug เพื่อใช้เป็น ID ที่ไม่ซ้ำ
+}));
+
+// 3. เตรียมข้อมูลสำหรับ FILTERS และการแสดงผล
+const allCategories = [
+  "All",
+  ...new Set(allProjects.map((p) => p.category).filter(Boolean)),
+];
+const allTags = [...new Set(allProjects.flatMap((project) => project.tags))];
 const shuffledProjects = shuffle([...allProjects]);
 ---
 
-<MainLayout title="PraditLee - Portfolio Home">
+<MainLayout title="My Portfolio - Home">
   <section id="homepage-portfolio">
     <h1>My Works</h1>
-    <p>รวบรวมผลงานเด่นจากทุกหมวดหมู่ เพื่อให้เห็นภาพรวมของทักษะทั้งหมด</p>
-    <div class="filter-tags">
+    <p>รวบรวมผลงานเด่นจากทุกหมวดหมู่</p>
+
+    <div class="category-filters">
+      {
+        allCategories.map((category) => (
+          <button
+            class:list={["category-btn", { "is-active": category === "All" }]}
+            data-category={category}
+          >
+            {category}
+          </button>
+        ))
+      }
+    </div>
+
+    <div class="filter-tags" id="tag-filter-container">
       {
         allTags.map((tag) => (
-          // เพิ่ม data-filter="all" ให้ปุ่ม All เพื่อให้ JS ทำงานง่ายขึ้น
-          <button
-            class:list={["filter-btn", { "is-active": tag === "All" }]}
-            data-tag={tag}
-            data-filter={tag === "All" ? "all" : "tag"}
-          >
+          <button class="filter-btn" data-tag={tag}>
             {tag}
           </button>
         ))
       }
     </div>
+
     <div class="masonry-grid">
       {
         shuffledProjects.map((project) => (
-          <div class="masonry-item" data-tags={project.tags.join(",")}>
+          <div
+            class="masonry-item"
+            data-tags={project.tags.join(",")}
+            data-category={project.category}
+            data-slug={project.slug}
+          >
             <ProjectCard {...project} />
           </div>
         ))
@@ -173,33 +88,59 @@ const shuffledProjects = shuffle([...allProjects]);
 </MainLayout>
 
 <style>
+  /* CSS ทั้งหมดที่เคยทำมาสำหรับหน้านี้ (masonry, filter buttons, etc.) */
   .masonry-grid {
-    /* กำหนดว่าจะแบ่งเป็นกี่คอลัมน์ */
     column-count: 3;
-    /* ระยะห่างระหว่างคอลัมน์ */
     column-gap: var(--spacing-md);
   }
   .masonry-item {
-    /* คำสั่งสำคัญ: ป้องกันไม่ให้การ์ด 1 ใบถูกตัดแบ่งข้ามคอลัมน์ */
     break-inside: avoid;
     margin-bottom: var(--spacing-md);
-    /* ปรับ transition ให้รองรับ property ใหม่ๆ */
     transition: all 0.4s ease-in-out;
   }
-  /* คลาสที่จะถูกเพิ่มโดย JavaScript เพื่อซ่อน item (เวอร์ชันอัปเกรด) */
   .masonry-item.hidden {
     transform: scale(0.8);
     opacity: 0;
-
-    /* --- ส่วนที่เพิ่มเข้ามา --- */
-    max-height: 0; /* ทำให้ความสูงยุบลงเหลือ 0 */
-    padding-top: 0; /* ลบ padding บน-ล่าง */
-    padding-bottom: 0;
-    margin-bottom: 0; /* ลบ margin ล่าง */
-    overflow: hidden; /* ซ่อนเนื้อหาที่ล้นออกมาตอนกำลังยุบ */
-    border: none; /* ลบ border */
+    max-height: 0;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    border: none;
   }
-  /* --- ขั้นตอนที่ 5: เพิ่ม CSS สำหรับปุ่ม Filter --- */
+  h1,
+  p {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .category-filters {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .category-btn {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s ease;
+  }
+  .category-btn:hover {
+    color: var(--color-text-primary);
+  }
+  .category-btn.is-active {
+    color: var(--color-primary);
+  }
   .filter-tags {
     display: flex;
     justify-content: center;
@@ -227,85 +168,140 @@ const shuffledProjects = shuffle([...allProjects]);
     color: white;
     border-color: var(--color-primary);
   }
-
-  /* ทำให้ Masonry Grid ของเรา Responsive */
   @media (max-width: 1024px) {
     .masonry-grid {
       column-count: 2;
     }
   }
-
   @media (max-width: 768px) {
     .masonry-grid {
       column-count: 1;
     }
   }
-
-  h1,
-  p {
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-  }
 </style>
-<script>
-  const filterButtons = document.querySelectorAll(".filter-btn");
-  const portfolioItems = document.querySelectorAll(".masonry-item");
-  const allButton = document.querySelector('.filter-btn[data-filter="all"]');
 
-  // State: เก็บ tags ที่กำลัง active อยู่
+<script>
+  import GLightbox from "glightbox";
+
+  // === DOM ELEMENTS ===
+  const categoryButtons = document.querySelectorAll(".category-btn");
+  const tagFilterContainer = document.getElementById("tag-filter-container");
+  const portfolioItems = document.querySelectorAll(".masonry-item");
+  const masonryGrid = document.querySelector(".masonry-grid");
+
+  // === STATE ===
+  let activeCategory = "All";
   let activeTags = new Set();
 
-  function filterItems() {
+  // === FUNCTIONS ===
+  function updateView() {
+    const visibleItems = [];
     portfolioItems.forEach((item) => {
-      const itemTags = item.getAttribute("data-tags").split(",");
-
-      // Logic: ถ้าไม่มี tag ไหน active เลย (โชว์ทั้งหมด) หรือ
-      // item นี้มี tag "อย่างน้อยหนึ่งอัน" ที่ตรงกับ activeTags
-      if (
-        activeTags.size === 0 ||
-        itemTags.some((tag) => activeTags.has(tag))
-      ) {
-        item.classList.remove("hidden");
+      const itemCategory = item.dataset.category;
+      const categoryMatch =
+        activeCategory === "All" || itemCategory === activeCategory;
+      if (categoryMatch) {
+        visibleItems.push(item);
+        const itemTags = item.dataset.tags.split(",");
+        const tagMatch =
+          activeTags.size === 0 || itemTags.some((tag) => activeTags.has(tag));
+        if (tagMatch) {
+          item.classList.remove("hidden");
+        } else {
+          item.classList.add("hidden");
+        }
       } else {
         item.classList.add("hidden");
       }
     });
+    updateAvailableTags(visibleItems);
   }
 
-  filterButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const selectedTag = button.getAttribute("data-tag");
-      const filterType = button.getAttribute("data-filter");
-
-      if (filterType === "all") {
-        // ถ้ากดปุ่ม 'All'
-        activeTags.clear(); // ล้าง Set
-        filterButtons.forEach((btn) => btn.classList.remove("is-active"));
-        allButton.classList.add("is-active");
-      } else {
-        // ถ้ากดปุ่ม Tag อื่นๆ
-        allButton.classList.remove("is-active"); // เอา active ออกจากปุ่ม 'All'
-
-        // Toggle การเลือก
-        button.classList.toggle("is-active");
-        if (activeTags.has(selectedTag)) {
-          activeTags.delete(selectedTag); // ถ้ามีอยู่แล้ว -> เอาออก
-        } else {
-          activeTags.add(selectedTag); // ถ้ายังไม่มี -> เพิ่มเข้าไป
-        }
-
-        // ถ้าไม่มี tag ไหนถูกเลือกเลย ให้กลับไป active ที่ปุ่ม 'All'
-        if (activeTags.size === 0) {
-          allButton.classList.add("is-active");
-        }
+  function updateAvailableTags(visibleItems) {
+    const availableTags = new Set();
+    visibleItems.forEach((item) => {
+      if (!item.classList.contains("hidden")) {
+        item.dataset.tags.split(",").forEach((tag) => availableTags.add(tag));
       }
+    });
+    tagFilterContainer.querySelectorAll(".filter-btn").forEach((btn) => {
+      if (activeCategory === "All" || availableTags.has(btn.dataset.tag)) {
+        btn.style.display = "inline-block";
+      } else {
+        btn.style.display = "none";
+      }
+    });
+  }
 
-      // เรียกใช้ฟังก์ชัน filter ทุกครั้งที่มีการคลิก
-      filterItems();
+  // === EVENT LISTENERS (Filtering) ===
+  categoryButtons.forEach((btn) => {
+    btn.addEventListener("click", (event) => {
+      const clickedCategory = event.target.dataset.category;
+      if (clickedCategory === activeCategory) return;
+      activeCategory = clickedCategory;
+      categoryButtons.forEach((b) => b.classList.remove("is-active"));
+      event.target.classList.add("is-active");
+      activeTags.clear();
+      tagFilterContainer
+        .querySelectorAll(".filter-btn")
+        .forEach((b) => b.classList.remove("is-active"));
+      updateView();
     });
   });
 
-  // เริ่มต้นให้แสดงผลทั้งหมด
-  filterItems();
+  tagFilterContainer.addEventListener("click", (event) => {
+    if (!event.target.matches(".filter-btn")) return;
+    const button = event.target;
+    const selectedTag = button.dataset.tag;
+    button.classList.toggle("is-active");
+    if (activeTags.has(selectedTag)) {
+      activeTags.delete(selectedTag);
+    } else {
+      activeTags.add(selectedTag);
+    }
+    updateView();
+  });
+
+  // === EVENT LISTENER (Lightbox) ===
+  masonryGrid.addEventListener("click", (event) => {
+    const lightboxTrigger = event.target.closest(".card-image-link.glightbox");
+    if (!lightboxTrigger) return;
+    event.preventDefault();
+
+    const visibleItems = document.querySelectorAll(
+      ".masonry-item:not(.hidden)"
+    );
+    const galleryElements = [];
+    let clickedIndex = -1;
+
+    visibleItems.forEach((item) => {
+      const links = item.querySelectorAll(".glightbox");
+      let itemStartIndex = galleryElements.length;
+      links.forEach((link, linkIndex) => {
+        const descriptionForSlide =
+          linkIndex === 0 ? link.dataset.description : "";
+        galleryElements.push({
+          href: link.href,
+          description: descriptionForSlide,
+        });
+      });
+      if (item.contains(lightboxTrigger)) {
+        clickedIndex = itemStartIndex;
+      }
+    });
+
+    if (galleryElements.length > 0) {
+      const dynamicLightbox = GLightbox({
+        elements: galleryElements,
+        startAt: clickedIndex >= 0 ? clickedIndex : 0,
+        loop: true,
+        slideEffect: "slide", // << กลับมาใช้ slide แบบปกติ
+        autoplayVideos: false, // << ยังคงปิด Autoplay ไว้
+      });
+      dynamicLightbox.open();
+    }
+  });
+
+  // Initial render
+  updateView();
 </script>
