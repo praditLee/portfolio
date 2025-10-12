@@ -1,25 +1,281 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
-import ProjectCard from "../components/ProjectCard.astro";
+import TimelineItem from "../components/TimelineItem.astro";
+import SkillBox from "../components/SkillBox.astro"; // <-- Import Component ใหม่
+import { skillsData } from "../data/skills.ts"; // <-- Import ข้อมูล Skills
+// 1. เตรียมข้อมูล Timeline (เริ่มจากปัจจุบันไปอดีต)
+const timelineData = [
+  {
+    year: "2021 - ปัจจุบัน",
+    title: "Freelance Web Developer & Designer",
+    company: "Self-employed",
+    description:
+      "รับงานออกแบบและพัฒนาเว็บไซต์ครบวงจร โดยใช้เทคโนโลยีสมัยใหม่เช่น Astro, React และ Figma ในการสร้างสรรค์ผลงาน มีประสบการณ์ทำงานกับลูกค้าหลากหลายประเภท สามารถบริหารจัดการ WordPress CMS ได้ตามความต้องการ",
+  },
+  {
+    year: "2013 - 2021",
+    title: "Digital Media Specialist",
+    company: "Siamentis Co., Ltd.",
+    description:
+      "รับผิดชอบงานออกแบบสื่อสิ่งพิมพ์และดิจิทัลทั้งหมด รวมถึงการทำ Video Content และ Motion Graphics ร่วมกับ Producer มากประสบการณ์ พร้อมทั้งดูแลเว็บไซต์ของบริษัทและลูกค้า",
+  },
+  {
+    year: "2001 - 2010",
+    title: "เรียนรู้พร้อมกับทำงานฝ่ายกิจกรรมและสื่อสารองค์กร",
+    company: "โครงการฝึกอบรมเยาวชนเพื่อการพัฒนา (YT) และ สถาบันต้นกล้า",
+    description:
+      "งานลงพื้นที่ทำงานกับเยาวชนที่ทำงานด้านสิ่งแวดล้อมและวัฒนธรรมชุมชน และงานรณรงค์ทุกวันฉันเปลี่ยนแปลงโลก (We Change) เริ่มจับงานออกแบบสื่อสิ่งพิมพ์และสื่อดิจิทัลตั้งแต่นั้นมา ในช่วงเวลานี้ได้เรียนรู้หลักสูตรด้านการจัดกระบวนการเรียนรู้แบบมีส่วนร่วม และการทำงานเป็นทีม ตลอดจนการเป็นผู้ช่วยวิทยากรกระบวนการ (Facilitator) ฝึกทักษะการจดประเด็นขึ้นกระดานในวงสนทนา ซึ่งเป็นจุดเริ่มต้นของความสนใจในงาน Visual Thinking และ Live Scribing",
+  },
+  {
+    year: "2000",
+    title: "จบการศึกษาระดับปริญญาตรี",
+    company: "สถาบันเทคโนโลยีพระจอมเกล้า เจ้าคุณทหารลาดกระบัง (KMITL)",
+    description:
+      "สำเร็จการศึกษาจากคณะวิศวกรรมศาสตร์ สาขาเทคโนโลยีการวัดคุมทางอุตสาหกรรม",
+  },
+  {
+    year: "1997",
+    title: "จบการศึกษาระดับ ปวส.",
+    company: "สถาบันเทคโนโลยีพระจอมเกล้าพระนครเหนือ (KMITNB)",
+    description:
+      "สำเร็จการศึกษาจากวิทยาลัยเทคโนโลยีอุตสาหกรรม สาขาช่างไฟฟ้าอุตสาหกรรม",
+  },
+  {
+    year: "1995",
+    title: "จบการศึกษาระดับ ปวช.",
+    company: "โรงเรียนกองทัพบกอุปถัมภ์ ช่างกล ขส.ทบ.",
+    description: "สำเร็จการศึกษาประกาศนียบัตรวิชาชีพ สาขาช่างไฟฟ้ากำลัง",
+  },
+  {
+    year: "1992",
+    title: "จบการศึกษาระดับมัธยมศึกษาตอนต้น",
+    company: "โรงเรียนสุรศักดิ์มนตรี",
+    description: "สำเร็จการศึกษาระดับมัธยมศึกษาตอนต้น (ม.3)",
+  },
+  {
+    year: "1989",
+    title: "จบการศึกษาระดับประถมศึกษา",
+    company: "โรงเรียนพร้อมพรรณวิทยา",
+    description: "สำเร็จการศึกษาระดับประถมศึกษา (ป.6)",
+  },
+];
 ---
 
 <MainLayout
-  title="About me - Pradit Leelanimit"
-  description="เกี่ยวกับประดิษฐ์ - เรื่องราว, ทักษะ, และประสบการณ์"
+  title="About Me"
+  description="เกี่ยวกับประดิษฐ์ (หมั่น) - เรื่องราว, ทักษะ, และประสบการณ์การทำงานในรูปแบบ Timeline"
 >
-  <div class="about-content">
+  <div class="about-container">
     <h1>About Me</h1>
-    <p>สวัสดีครับ ผมประดิษฐ์... (ใส่เนื้อหาแนะนำตัวของคุณที่นี่)</p>
-    <p>
-      คุณสามารถเล่าเรื่องราวการเดินทางของคุณ, ปรัชญาในการทำงาน, หรือทักษะต่างๆ
-      ที่คุณเชี่ยวชาญได้ในหน้านี้...
+    <p class="intro-text">
+      หมั่น -
+      มีความหลงใหลในการผสมผสานระหว่างการออกแบบที่สวยงามและเทคโนโลยีที่ทรงพลัง
+      นี่คือทักษะที่ผมมี เครื่องมือที่ผมใช้ และความเชี่ยวชาญที่ผมสะสมมา...
     </p>
+    <div class="skills-section">
+      <div class="skills-grid">
+        {skillsData.map((skill) => <SkillBox skill={skill} />)}
+      </div>
+    </div>
+    {/* ====== Timeline Section ====== */}
+    <h2>เส้นทางการทำงานและเรียนรู้</h2>
+    <div class="timeline-container">
+      {timelineData.map((item) => <TimelineItem {...item} />)}
+    </div>
   </div>
+
+  {/* ===== เพิ่ม SECTION ใหม่สำหรับฟอร์มติดต่อ ===== */}
+  <section id="contact">
+    <h2>Contact Me</h2>
+    <p>สนใจร่วมงาน หรือมีคำถาม? กรอกฟอร์มด้านล่างนี้ได้เลยครับ</p>
+
+    <form
+      name="contact"
+      method="POST"
+      data-netlify="true"
+      netlify-honeypot="bot-field"
+      class="contact-form"
+      action="/success/"
+      netlify
+    >
+      {/* Field ที่ซ่อนไว้สำหรับดักจับบอท (Honeypot) */}
+      <p class="hidden" style="display:none;">
+        <label>
+          Don’t fill this out if you’re human: <input name="bot-field" />
+        </label>
+      </p>
+
+      <div class="form-group">
+        <label for="name">ชื่อของคุณ</label>
+        <input type="text" id="name" name="name" required />
+      </div>
+      <div class="form-group">
+        <label for="email">อีเมล</label>
+        <input type="email" id="email" name="email" required />
+      </div>
+      <div class="form-group">
+        <label for="message">ข้อความ</label>
+        <textarea id="message" name="message" rows="5" required></textarea>
+      </div>
+      <button type="submit" class="submit-btn">ส่งข้อความ</button>
+    </form>
+  </section>
 </MainLayout>
 
 <style>
-  .about-content {
-    max-width: 70ch; /* จำกัดความกว้างให้อ่านง่าย */
+  .about-container {
+    max-width: 800px;
     margin: 0 auto;
+    padding: var(--spacing-lg) var(--spacing-md);
+  }
+  .about-container h1 {
+    text-align: center;
+    margin-bottom: var(--spacing-md);
+  }
+  .intro-text {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+    font-size: 1.1rem;
+    color: var(--color-text-secondary);
+  }
+  .skills-section {
+    padding-bottom: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .skills-section h2 {
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+  }
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-md);
+  }
+  .timeline-container {
+    position: relative;
+  }
+  .timeline-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 30%;
+    width: 3px;
+    background-color: var(--color-border);
+    transform: translateX(-50%);
+  }
+
+  /* --- สไตล์ที่ควบคุม Component จากภายนอก จะยังอยู่ที่นี่ --- */
+  /* Animation */
+  .timeline-container :global(.timeline-item) {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.6s ease-out,
+      transform 0.6s ease-out;
+  }
+  .timeline-container :global(.timeline-item.is-visible) {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* สลับสีพื้นหลัง */
+  .timeline-container
+    :global(.timeline-item:nth-of-type(even) .timeline-content) {
+    background-color: var(--color-surface);
+  }
+
+  /* Responsive (เฉพาะส่วน Container) */
+  @media (max-width: 768px) {
+    .timeline-container::before {
+      left: var(--spacing-md);
+    }
+  }
+
+  /* ====== CSS สำหรับฟอร์มติดต่อ ====== */
+  #contact {
+    padding-top: var(--spacing-xl);
+    padding-bottom: var(--spacing-xl);
+    background-color: var(--color-surface);
+  }
+  #contact h2,
+  #contact p {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .contact-form {
+    max-width: 600px;
+    margin: var(--spacing-lg) auto 0;
+  }
+  .form-group {
+    margin-bottom: var(--spacing-md);
+  }
+  .form-group label {
+    display: block;
+    margin-bottom: var(--spacing-xs);
+    font-weight: 600;
+  }
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    font-family: var(--font-body);
+    font-size: 1rem;
+  }
+  .submit-btn {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--color-primary);
+    color: white;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  .submit-btn:hover {
+    background-color: var(--color-primary-dark);
   }
 </style>
+<script>
+  // --- JavaScript สำหรับ Lazy Load Animation ---
+  const timelineItems = document.querySelectorAll(".timeline-item");
+
+  const observer = new IntersectionObserver(
+    (entries, observer) => {
+      entries.forEach((entry) => {
+        // ถ้า element เข้ามาในหน้าจอ
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          // เมื่อแสดงผลแล้ว ให้หยุด observe element นี้เพื่อประสิทธิภาพที่ดี
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    {
+      // กำหนดว่า animation จะเริ่มทำงานเมื่อเห็น element 15%
+      threshold: 0.15,
+    }
+  );
+
+  // สั่งให้ observer เริ่มสังเกตการณ์ timeline item ทุกอัน
+  timelineItems.forEach((item) => {
+    observer.observe(item);
+  });
+  // --- JavaScript สำหรับ GLightbox (เพิ่มเข้ามา) ---
+  import GLightbox from "glightbox";
+
+  // สั่งให้ GLightbox ทำงานกับ Skill Box
+  const skillLightbox = GLightbox({
+    selector: ".glightbox", // ใช้ selector เดิมได้เลย
+    touchNavigation: true,
+    loop: false, // ไม่ต้อง loop สำหรับ skills
+  });
+</script>

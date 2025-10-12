@@ -2,6 +2,7 @@
 import MainLayout from "../layouts/MainLayout.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import { getCollection } from "astro:content";
+import { marked } from "marked";
 
 // 1. นิยามฟังก์ชัน SHUFFLE
 function shuffle(array) {
@@ -21,17 +22,22 @@ function shuffle(array) {
 // 2. ดึงข้อมูลจาก CONTENT COLLECTIONS
 const projectsFromCollection = await getCollection("projects");
 
-const allProjects = projectsFromCollection.map((project) => ({
-  title: project.data.title,
-  category: project.data.category,
-  tags: project.data.tags,
-  imageUrl: project.data.imageUrl,
-  gallery: project.data.gallery || [],
-  type: project.data.type,
-  videoUrl: project.data.videoUrl || "",
-  description: project.body,
-  slug: project.slug, // เพิ่ม slug เพื่อใช้เป็น ID ที่ไม่ซ้ำ
-}));
+const allProjects = projectsFromCollection.map((project) => {
+  // 2. เรียกใช้ marked.parse() เพื่อแปลง body ให้เป็น HTML
+  const renderedDescription = marked.parse(project.body);
+
+  return {
+    title: project.data.title,
+    category: project.data.category,
+    tags: project.data.tags,
+    imageUrl: project.data.imageUrl,
+    gallery: project.data.gallery || [],
+    type: project.data.type,
+    videoUrl: project.data.videoUrl || "",
+    description: renderedDescription, // <-- ส่ง HTML ที่แปลงแล้วเข้าไป
+    slug: project.slug,
+  };
+});
 
 // 3. เตรียมข้อมูลสำหรับ FILTERS และการแสดงผล
 const allCategories = [
@@ -131,7 +137,7 @@ const shuffledProjects = shuffle([...allProjects]);
 <style>
   /* CSS ทั้งหมดที่เคยทำมาสำหรับหน้านี้ (masonry, filter buttons, etc.) */
   .masonry-grid {
-    column-count: 3;
+    column-count: 4;
     column-gap: var(--spacing-md);
   }
   .masonry-item {
