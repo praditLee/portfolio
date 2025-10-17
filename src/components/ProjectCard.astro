@@ -1,35 +1,38 @@
 ---
 const {
   title,
-  imageUrl,
   description,
-  tags = [],
+  imageUrl,
+  gallery = [],
   type = "image",
   videoUrl = "",
-  gallery = [],
+  previewVideoUrl = "",
   category = "",
+  tags = [],
+  aspectRatio = "",
+  slug,
 } = Astro.props;
 
-// --- Logic ใหม่สำหรับจัดการ Gallery ---
+const galleryName = title.replace(/\s+/g, "-").toLowerCase();
 
-// 1. กำหนดให้ทุกโปรเจกต์ใช้ gallery name เดียวกันคือ "portfolio"
-const galleryName = "portfolio";
-
-// 2. กำหนดว่าลิงก์หลักที่จะแสดงผลคืออะไร
 let mainLightboxUrl = "";
 if (type === "video") {
   mainLightboxUrl = videoUrl;
 } else if (gallery.length > 0) {
   mainLightboxUrl = gallery[0];
 } else {
-  mainLightboxUrl = imageUrl; // Fallback
+  mainLightboxUrl = imageUrl;
 }
 
-// 3. เตรียมรูปภาพที่เหลือสำหรับทำเป็นลิงก์ที่ซ่อนไว้
 const additionalImages = type === "image" ? gallery.slice(1) : [];
 ---
 
-<div class="card">
+<div
+  class:list={[
+    "card",
+    { "is-video-card": type === "video" && previewVideoUrl },
+  ]}
+>
   {category && <div class="card-category">{category}</div>}
 
   <a
@@ -37,21 +40,33 @@ const additionalImages = type === "image" ? gallery.slice(1) : [];
     class="glightbox card-image-link"
     data-gallery={galleryName}
     data-description={description}
+    style={type === "video" && previewVideoUrl && aspectRatio
+      ? `--video-aspect-ratio: ${aspectRatio};`
+      : ""}
   >
-    <img src={imageUrl} alt={title} />
+    {
+      type === "video" && previewVideoUrl ? (
+        <>
+          <img src={imageUrl} alt={title} class="card-image-static" />
+          <video
+            src={previewVideoUrl}
+            class="card-video-preview"
+            muted
+            loop
+            playsinline
+            preload="metadata"
+          />
+        </>
+      ) : (
+        <img src={imageUrl} alt={title} />
+      )
+    }
 
     {
       type === "video" && (
         <div class="play-icon-overlay">
           <svg class="play-icon" viewBox="0 0 200 200" alt="Play video">
-            <circle
-              cx="100"
-              cy="100"
-              r="90"
-              fill="rgba(0,0,0,0.5)"
-              stroke-width="15"
-              stroke="#fff"
-            />
+            <circle cx="100" cy="100" r="100" fill="rgba(0,0,0,0.5)" />
             <polygon points="70, 55 70, 145 145, 100" fill="#fff" />
           </svg>
         </div>
@@ -75,144 +90,213 @@ const additionalImages = type === "image" ? gallery.slice(1) : [];
   }
 
   <div class="card-content">
-    <h3>{title}</h3>
+    <h3><a href={`/projects/${slug}`} class="details-link">{title}</a></h3>
     <p set:html={description} />
 
-    {
-      tags.length > 0 && (
-        <div class="tags-container">
-          {tags.map((tag) => (
-            <span class="tag">{tag}</span>
-          ))}
-        </div>
-      )
-    }
+    <div class="card-footer">
+      {/* << สร้าง wrapper ใหม่ */}
+      {
+        tags.length > 0 && (
+          <div class="tags-container">
+            {tags.map((tag) => (
+              <span class="tag">{tag}</span>
+            ))}
+          </div>
+        )
+      }
+
+      {/* >> ปิด wrapper ใหม่ */}
+    </div>
   </div>
+
+  <style>
+    .card {
+      display: flex;
+      flex-direction: column;
+      background-color: var(--color-surface);
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      overflow: hidden;
+      transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+    .card-category {
+      position: absolute;
+      top: var(--spacing-sm);
+      right: var(--spacing-sm);
+      z-index: 5;
+      background-color: rgba(33, 37, 41, 0.6);
+      backdrop-filter: blur(4px);
+      color: white;
+      font-family: var(--font-heading);
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+    }
+    .card:hover .card-category {
+      background-color: var(--color-primary);
+      transform: translateY(-2px);
+    }
+
+    .card-image-link {
+      display: block;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* สไตล์สำหรับรูปภาพทั่วไป */
+    .card-image-link img {
+      display: block;
+      width: 100%;
+      height: auto;
+      transition: transform 0.3s ease;
+    }
+
+    /* เอฟเฟกต์ Zoom ตอน hover สำหรับทั้ง img และ video */
+    .card:hover .card-image-link img,
+    .is-video-card:hover .card-video-preview {
+      /* ใช้ .is-video-card:hover เพื่อไม่ให้ img ใน video card มี zoom ซ้อนกัน */
+      transform: scale(1.05);
+    }
+
+    /* ================================================================= */
+    /* === จุดที่ 1 & 3: การสลับภาพและควบคุม aspect-ratio ของวิดีโอ === */
+    /* ================================================================= */
+
+    .is-video-card .card-image-link {
+      /* ใช้ --video-aspect-ratio ที่ส่งมาจากการ์ดแต่ละใบ */
+      aspect-ratio: var(--video-aspect-ratio, 16/10);
+    }
+
+    .is-video-card .card-image-static, /* ภาพนิ่งใน video card */
+    .is-video-card .card-video-preview {
+      /* วิดีโอพรีวิว */
+      position: absolute; /* ให้ซ้อนทับกัน */
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity 0.3s ease;
+    }
+
+    .is-video-card .card-image-static {
+      opacity: 1; /* ภาพนิ่งแสดงผลในสถานะปกติ */
+      z-index: 2; /* อยู่ด้านบน */
+    }
+
+    .is-video-card .card-video-preview {
+      opacity: 0; /* วิดีโอพรีวิวซ่อนอยู่ในสถานะปกติ */
+      z-index: 1; /* อยู่ด้านล่าง */
+    }
+
+    .is-video-card:hover .card-image-static {
+      opacity: 0; /* เมื่อ hover, ภาพนิ่งจางหาย */
+    }
+
+    .is-video-card:hover .card-video-preview {
+      opacity: 1; /* เมื่อ hover, วิดีโอพรีวิวปรากฏขึ้น */
+    }
+
+    /* ================================================================= */
+    /* === จุดที่ 2: ปรับตำแหน่งและขนาดไอคอน Play === */
+    /* ================================================================= */
+    .play-icon-overlay {
+      position: absolute;
+      bottom: var(--spacing-sm); /* มุมซ้ายล่าง */
+      left: var(--spacing-sm); /* มุมซ้ายล่าง */
+      width: 32px; /* ขนาดของวงกลมพื้นหลัง */
+      height: 32px;
+      border-radius: 50%; /* ทำให้เป็นวงกลม */
+      background-color: rgba(0, 0, 0, 0.5); /* พื้นหลังวงกลมสีดำ */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 1; /* มองเห็นในสถานะปกติ */
+      z-index: 3; /* อยู่ด้านบนของทุกอย่าง */
+      transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
+    }
+
+    .is-video-card:hover .play-icon-overlay {
+      opacity: 0; /* เมื่อ hover, จางหายไป */
+      transform: scale(0.8); /* หดเล็กน้อยตอนจางหาย */
+    }
+
+    .play-icon {
+      width: 24px; /* ขนาดไอคอน Play ที่เล็กลง */
+      height: 24px;
+      /* ไม่มี circle (เส้นวงกลม) แล้ว ใช้ background-color ของ overlay แทน */
+      filter: none; /* ลบ drop-shadow เดิมออก */
+    }
+    .play-icon circle {
+      /* ลบสไตล์วงกลมที่เป็นเส้นออก */
+      display: none;
+    }
+    .play-icon polygon {
+      /* สไตล์ของลูกศร Play */
+      fill: #fff;
+    }
+    .card-content {
+      padding: var(--spacing-md);
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+    .card-content h3 {
+      margin-top: 0;
+      margin-bottom: var(--spacing-xs);
+      font-size: 1.2rem;
+    }
+    .card-content p {
+      color: var(--color-text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: var(--spacing-sm);
+    }
+    .tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      flex-grow: 1;
+      margin-top: 0;
+    }
+    .tag {
+      background-color: var(--color-background);
+      color: var(--color-text-secondary);
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid var(--color-border);
+    }
+    @media (max-width: 768px) {
+      .card-content h3 {
+        display: none;
+      }
+    }
+    .card-footer {
+      margin-top: auto;
+      padding-top: var(--spacing-md);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .details-link {
+      text-decoration: none;
+      white-space: nowrap; /* ไม่ให้ตัดคำ */
+    }
+    .details-link:hover {
+      text-decoration: underline;
+    }
+  </style>
 </div>
-
-<style>
-  .card {
-    display: flex;
-    position: relative;
-    flex-direction: column;
-    background-color: var(--color-surface);
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    overflow: hidden;
-    height: 100%;
-    transition:
-      transform 0.2s,
-      box-shadow 0.2s; /* ย้าย transition มาไว้ที่ div */
-  }
-  .card-category {
-    position: absolute;
-    top: var(--spacing-sm);
-    right: var(--spacing-sm);
-    z-index: 5;
-
-    /* สไตล์เริ่มต้น: โปร่งแสง */
-    background-color: rgba(33, 37, 41, 0.2); /* สีเทาเข้มโปร่งแสง */
-    backdrop-filter: blur(4px); /* เบลอพื้นหลังเล็กน้อย */
-    color: white;
-
-    font-family: var(--font-heading);
-    font-size: 0.7rem;
-    font-weight: 600;
-    padding: 0.2rem 0.6rem;
-    border-radius: 999px;
-    text-transform: uppercase;
-
-    /* เพิ่ม Transition */
-    transition: all 0.3s ease;
-  }
-
-  /* สไตล์เมื่อ Hover ที่การ์ด */
-  .card:hover .card-category {
-    background-color: rgba(33, 37, 41, 0.4);
-    /* transform: translateY(-2px); */
-  }
-  .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12); /* ย้าย hover effect มาไว้ที่ div */
-  }
-
-  .card-image-link {
-    display: block; /* ทำให้ <a> เป็น block element */
-    position: relative; /* สำหรับ play icon */
-  }
-
-  .card img {
-    width: 100%;
-    display: block;
-  }
-  /* 4. เพิ่มสไตล์สำหรับ Play Icon และ Overlay */
-  .play-icon-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.2);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .card:hover .play-icon-overlay {
-    opacity: 1;
-  }
-
-  .play-icon {
-    width: 30%; /* << เปลี่ยนเป็น % */
-    height: auto; /* << ปล่อยให้สูงอัตโนมัติตามสัดส่วน */
-    max-width: 60px; /* << แต่ขนาดสูงสุดไม่เกิน 60px */
-    transition: transform 0.3s ease;
-  }
-
-  .card:hover .play-icon {
-    transform: scale(1.1);
-  }
-  .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-  }
-  .card img {
-    width: 100%;
-    /* height: 220px; */
-    object-fit: cover;
-    display: block; /* แก้ปัญหาช่องว่างเล็กๆ ใต้ภาพ */
-  }
-  .card-content {
-    padding: var(--spacing-sm);
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1; /* ให้ card-content ขยายเต็มพื้นที่ที่เหลือ */
-  }
-  .card-content h3 {
-    margin-top: 0;
-    margin-bottom: var(--spacing-xs);
-  }
-  .card-content p {
-    color: var(--color-text-secondary);
-    font-size: 0.9rem;
-    margin-bottom: var(--spacing-sm);
-  }
-  /* เพิ่มสไตล์สำหรับ Tags */
-  .tags-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: auto; /* คำสั่งนี้จะดันตัวเองไปอยู่ล่างสุดของ flex container */
-  }
-  .tag {
-    background-color: var(--color-surface);
-    color: var(--color-text-secondary);
-    font-size: 0.75rem;
-    font-weight: 500;
-    padding: 0.25rem 0.75rem;
-    border-radius: 999px; /* ทำให้เป็นทรงแคปซูล */
-    border: 1px solid var(--color-border);
-  }
-</style>

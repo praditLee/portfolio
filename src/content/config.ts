@@ -10,6 +10,8 @@ const projectCollection = defineCollection({
     gallery: z.array(z.string()).optional(),
     type: z.enum(['image', 'video']),
     videoUrl: z.string().optional(),
+    previewVideoUrl: z.string().optional(),
+    aspectRatio: z.string().optional(),
     // เราจะไม่เก็บ description ที่นี่ เพราะเราจะใช้เนื้อหาของไฟล์ Markdown แทน
   }),
 });

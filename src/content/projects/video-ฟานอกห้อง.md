@@ -3,8 +3,9 @@ title: "สื่อวิดีโอชุดฟานอกห้อง"
 type: "video"
 imageUrl: "/images/01-tn-faoutdoor.webp"
 videoUrl: "https://www.youtube.com/watch?v=XwGV4fGcJoY"
+
 category: "Video Editor"
-tags: ["FCPX", "Animation"]
+tags: ["Animation"]
 gallery: []
 ---
 

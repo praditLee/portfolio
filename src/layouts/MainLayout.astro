@@ -64,5 +64,47 @@ const {
         hamburgerBtn.classList.toggle("is-active");
       });
     </script>
+    {/* ===== เพิ่มสคริปต์สำหรับ Video Hover (เวอร์ชันดีบัก) ===== */}
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        console.log("▶️ Video hover script: เริ่มทำงานหลังจาก DOM โหลดเสร็จ");
+
+        const videoCards = document.querySelectorAll(".is-video-card");
+        console.log(
+          `🔎 Video hover script: พบการ์ดวิดีโอทั้งหมด ${videoCards.length} ใบ`
+        );
+
+        videoCards.forEach((card, index) => {
+          const video = card.querySelector("video");
+
+          if (video) {
+            console.log(
+              `✅ การ์ดใบที่ ${index + 1}: เจอแท็ก <video> แล้ว, กำลังเพิ่ม event listeners...`
+            );
+
+            card.addEventListener("mouseenter", () => {
+              console.log(
+                `🖱️ เมาส์เข้าการ์ดใบที่ ${index + 1}, สั่งให้วิดีโอเล่น`
+              );
+              video.play().catch((e) => {
+                // console.log("Autoplay was prevented, this is normal.");
+              });
+            });
+
+            card.addEventListener("mouseleave", () => {
+              console.log(
+                `🖱️ เมาส์ออกจากการ์ดใบที่ ${index + 1}, สั่งให้วิดีโอหยุด`
+              );
+              video.pause();
+              video.currentTime = 0;
+            });
+          } else {
+            console.error(
+              `❌ การ์ดใบที่ ${index + 1}: ไม่เจอแท็ก <video> ข้างใน .is-video-card`
+            );
+          }
+        });
+      });
+    </script>
   </body>
 </html>

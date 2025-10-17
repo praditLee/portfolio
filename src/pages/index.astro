@@ -18,6 +18,18 @@ function shuffle(array) {
   }
   return array;
 }
+function normalizeYoutubeUrl(url) {
+  if (!url) return "";
+  // ตรวจสอบว่า URL เป็นของ Shorts หรือไม่
+  if (url.includes("/shorts/")) {
+    // ดึง Video ID ซึ่งเป็นส่วนสุดท้ายของ URL
+    const videoId = url.split("/").pop();
+    // สร้าง URL ใหม่ในรูปแบบมาตรฐาน
+    return `https://www.youtube.com/watch?v=${videoId}`;
+  }
+  // ถ้าไม่ใช่ Shorts URL ก็คืนค่า URL เดิมกลับไป
+  return url;
+}
 
 // 2. ดึงข้อมูลจาก CONTENT COLLECTIONS
 const projectsFromCollection = await getCollection("projects");
@@ -33,7 +45,11 @@ const allProjects = projectsFromCollection.map((project) => {
     imageUrl: project.data.imageUrl,
     gallery: project.data.gallery || [],
     type: project.data.type,
-    videoUrl: project.data.videoUrl || "",
+    videoUrl: project.data.videoUrl
+      ? normalizeYoutubeUrl(project.data.videoUrl)
+      : "",
+    previewVideoUrl: project.data.previewVideoUrl || "",
+    aspectRatio: project.data.aspectRatio,
     description: renderedDescription, // <-- ส่ง HTML ที่แปลงแล้วเข้าไป
     slug: project.slug,
   };
@@ -217,12 +233,12 @@ const shuffledProjects = shuffle([...allProjects]);
   }
   @media (max-width: 1024px) {
     .masonry-grid {
-      column-count: 2;
+      column-count: 3;
     }
   }
   @media (max-width: 768px) {
     .masonry-grid {
-      column-count: 1;
+      column-count: 2;
     }
   }
   /* ====== CSS สำหรับฟอร์มติดต่อ ====== */
