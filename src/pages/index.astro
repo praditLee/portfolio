@@ -51,7 +51,7 @@ const allProjects = projectsFromCollection.map((project) => {
     previewVideoUrl: project.data.previewVideoUrl || "",
     aspectRatio: project.data.aspectRatio,
     description: renderedDescription, // <-- ส่ง HTML ที่แปลงแล้วเข้าไป
-    slug: project.slug,
+    slug: project.id,
   };
 });
 
@@ -382,7 +382,7 @@ const shuffledProjects = shuffle([...allProjects]);
     event.preventDefault();
 
     const visibleItems = document.querySelectorAll(
-      ".masonry-item:not(.hidden)"
+      ".masonry-item:not(.hidden)",
     );
     const galleryElements = [];
     let clickedIndex = -1;

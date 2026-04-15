@@ -1,21 +1,22 @@
 ---
 import MainLayout from "../../layouts/MainLayout.astro";
-import { getCollection } from "astro:content";
+// สังเกตที่บรรทัดนี้ครับ ต้องมีคำว่า render อยู่ข้างในปีกกาด้วย
+import { getCollection, render } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 
-// 1. ฟังก์ชันนี้จะทำงานตอน Build เพื่อบอก Astro ว่าต้องสร้างหน้าอะไรบ้าง
 export async function getStaticPaths() {
   const projects = await getCollection("projects");
   return projects.map((project) => ({
-    params: { slug: project.slug }, // กำหนด URL เช่น /projects/my-first-project
-    props: { project }, // ส่งข้อมูลทั้งหมดของ project นั้นๆ ไปให้หน้านี้
+    params: { slug: project.id },
+    props: { project },
   }));
 }
 
-// 2. รับข้อมูลของโปรเจกต์สำหรับหน้านี้โดยเฉพาะ
 type Props = { project: CollectionEntry<"projects"> };
 const { project } = Astro.props;
-const { Content } = await project.render(); // แปลงเนื้อหา Markdown เป็น HTML
+
+// เมื่อ import ด้านบนแล้ว คำสั่งนี้ก็จะทำงานได้ตามปกติครับ
+const { Content } = await render(project);
 ---
 
 <MainLayout
